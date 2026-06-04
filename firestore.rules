@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloudfirestore {
+  match /databases/{database}/documents {
+    
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Checking if ID has valid safe characters and size
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Validation schema for Incident Logs (The 8 Pillars validation helper)
+    function isValidIncident(data) {
+      return data.keys().hasAll(['id', 'name', 'dateTime', 'incidentType', 'timestamp'])
+        && data.keys().size() <= 7
+        && data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.dateTime is string && data.dateTime.size() <= 100
+        && (data.photoUrl == null || (data.photoUrl is string && data.photoUrl.size() <= 1048576))
+        && data.incidentType is string && (data.incidentType == 'injury' || data.incidentType == 'property' || data.incidentType == 'near_miss' || data.incidentType == 'other')
+        && data.timestamp is string && data.timestamp.size() <= 100
+        && (!data.keys().contains('customDescription') || (data.customDescription is string && data.customDescription.size() <= 5000));
+    }
+
+    // Rules for Golf Incident Reports
+    match /incidents/{incidentId} {
+      allow create: if isValidId(incidentId) && isValidIncident(request.resource.data) && request.resource.data.id == incidentId;
+      allow get, list: if true;
+      allow update, delete: if false; // Immutable, tamper-proof audit trail for civil recourse!
+    }
+  }
+}

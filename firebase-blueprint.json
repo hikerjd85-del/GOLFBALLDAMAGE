@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "IncidentReport": {
+      "title": "IncidentReport",
+      "description": "Represents a reported golf course ball strike, damage, or near-miss incident.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Standardized ID for the incident report, format prefix: GIR-YYYY-XXXX"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name and unit number of the reporting resident."
+        },
+        "dateTime": {
+          "type": "string",
+          "description": "The date and time of the incident."
+        },
+        "photoUrl": {
+          "type": "string",
+          "description": "A Base64 data URL representing the photo of damage, or null if empty."
+        },
+        "incidentType": {
+          "type": "string",
+          "enum": ["injury", "property", "near_miss", "other"],
+          "description": "The categorizing classification of the logged incident."
+        },
+        "customDescription": {
+          "type": "string",
+          "description": "The details filled in by the resident if incidentType is 'other'."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The exact localized date and time when the report was recorded."
+        }
+      },
+      "required": ["id", "name", "dateTime", "incidentType", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/incidents/{incidentId}": {
+      "schema": "IncidentReport",
+      "description": "A collection storing all golf ball strike incident logs."
+    }
+  }
+}

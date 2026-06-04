@@ -1,0 +1,6 @@
+{
+  "name": "Golf Ball Incident Report",
+  "description": "A minimalist, mobile-first web application for residents to quickly report golf ball incidents, with large high-contrast inputs designed for easy accessibility.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
